@@ -98,7 +98,7 @@ const userDataTask: TaskEither<string, string> = tryCatchAsync(
 );
 
 // Step 2: Synchronously parse and validate the fetched data.
-// Here, we use pipeEither to chain synchronous operations.
+// Here, we use pipe to chain synchronous operations.
 // Note: We await the TaskEither so it resolves to an Either as the pipeline depends on the value.
 const userParsed: Either<string, User> = pipe(
   await userDataTask,

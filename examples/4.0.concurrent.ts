@@ -3,7 +3,7 @@
  *
  * It shows how to:
  *   - Fetch user profile data and membership level concurrently.
- *   - Process both results synchronously using pipeEither.
+ *   - Process both results synchronously using pipe.
  *   - Handle errors immediately when a dependent async operation is required.
  *   - Update the user asynchronously using the concurrently fetched membership level.
  */
@@ -150,7 +150,7 @@ const membershipData: TaskEither<string, string> = tryCatchAsync(
 // Process Fetched Data Synchronously
 // -----------------------------
 
-// Synchronously parse and validate the fetched user data using pipeEither.
+// Synchronously parse and validate the fetched user data using pipe.
 // We also use mapLeft to annotate any errors.
 const userEither: Either<string, User> = mapLeft(
   pipe(await fetchedUserData, parseJSON, validateUser),

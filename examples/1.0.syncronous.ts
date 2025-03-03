@@ -106,7 +106,7 @@ const updateUserAge = (user: User): Either<string, User> =>
     age: (user.age += 1),
   });
 
-// Synchronously parse, validate and update the data using pipeEither.
+// Synchronously parse, validate and update the data using pipe.
 const userEither: Either<string, User> = pipe(
   parseJSON(jsonStr),
   validateUser,
