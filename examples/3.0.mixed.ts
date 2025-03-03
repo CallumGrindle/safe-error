@@ -86,6 +86,25 @@ const validateUser = (data: unknown): Either<string, User> => {
   return left("Invalid user data");
 };
 
+/**
+ * Asynchronously updates the User by adding some data.
+ *
+ * @param user - The User to update.
+ * @param data - The additional data to add.
+ * @returns A Promise that resolves to the updated User.
+ */
+const updateUser = (user: User, data: string): Promise<User> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // Randomly simulate success or failure.
+      const success: boolean = Math.random() > 0.5;
+      return success
+        ? resolve({ ...user, data })
+        : reject(new Error("Failed to update User"));
+    }, 500);
+  });
+};
+
 // -----------------------------
 // Asynchronous Pipeline: Fetch and Validate User Data
 // -----------------------------
@@ -117,25 +136,6 @@ if (isLeft(userParsed)) {
 // -----------------------------
 // Asynchronous Pipeline: Update User
 // -----------------------------
-
-/**
- * Asynchronously updates the User by adding some data.
- *
- * @param user - The User to update.
- * @param data - The additional data to add.
- * @returns A Promise that resolves to the updated User.
- */
-const updateUser = (user: User, data: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Randomly simulate success or failure.
-      const success: boolean = Math.random() > 0.5;
-      return success
-        ? resolve({ ...user, data })
-        : reject(new Error("Failed to update User"));
-    }, 500);
-  });
-};
 
 // Step 3: Asynchronously update the user.
 // Since updateUser returns a Promise, we wrap it with tryCatchAsync.

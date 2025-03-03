@@ -77,26 +77,6 @@ const updateUser = (user: User, membership: string): Promise<User> => {
 };
 
 /**
- * Parses a JSON string into an object.
- * Returns a Right with the parsed object or a Left with an error message.
- *
- * @param jsonString - The JSON string to parse.
- * @returns Either a string error message or the parsed object.
- */
-const parseJSON = (jsonString: string): Either<string, unknown> => {
-  return tryCatch<string, unknown>(
-    () => JSON.parse(jsonString),
-    (error: unknown): string => `Invalid JSON: ${(error as Error).message}`
-  );
-};
-
-interface User {
-  name: string;
-  age: number;
-  membershipLevel?: string;
-}
-
-/**
  * Validates that the provided data conforms to the User interface.
  *
  * @param user - The data to validate.
@@ -129,18 +109,38 @@ const validateMembershipData = (
   return left("Invalid membership data");
 };
 
+/**
+ * Parses a JSON string into an object.
+ * Returns a Right with the parsed object or a Left with an error message.
+ *
+ * @param jsonString - The JSON string to parse.
+ * @returns Either a string error message or the parsed object.
+ */
+const parseJSON = (jsonString: string): Either<string, unknown> => {
+  return tryCatch<string, unknown>(
+    () => JSON.parse(jsonString),
+    (error: unknown): string => `Invalid JSON: ${(error as Error).message}`
+  );
+};
+
+interface User {
+  name: string;
+  age: number;
+  membershipLevel?: string;
+}
+
 // -----------------------------
 // Launch concurrent asynchronous operations
 // -----------------------------
 
 // Kick off both asynchronous tasks concurrently.
-const fetchedUserData: TaskEither<string, string> = tryCatchAsync(
+const userDataTask: TaskEither<string, string> = tryCatchAsync(
   fetchUserData,
   (error: unknown): string =>
     `Error fetching User data: ${(error as Error).message}`
 );
 
-const membershipData: TaskEither<string, string> = tryCatchAsync(
+const membershipDataTask: TaskEither<string, string> = tryCatchAsync(
   fetchMembershipData,
   (error: unknown): string =>
     `Error fetching membership data: ${(error as Error).message}`
@@ -153,8 +153,8 @@ const membershipData: TaskEither<string, string> = tryCatchAsync(
 // Synchronously parse and validate the fetched user data using pipe.
 // We also use mapLeft to annotate any errors.
 const userEither: Either<string, User> = mapLeft(
-  pipe(await fetchedUserData, parseJSON, validateUser),
-  (err: string) => `Failed to fetch User data: ${err}`
+  pipe(await userDataTask, parseJSON, validateUser),
+  (err: string) => `Unable to process User: ${err}`
 );
 
 // Before proceeding, ensure we have valid user data.
@@ -164,8 +164,8 @@ if (isLeft(userEither)) {
 
 // Convert membershipData TaskEither to Either via synchronous processing.
 const membershipEither: Either<string, string> = mapLeft(
-  pipe(await membershipData, parseJSON, validateMembershipData),
-  (err: string) => `Failed to fetch membership data: ${err}`
+  pipe(await membershipDataTask, parseJSON, validateMembershipData),
+  (err: string) => `Unable to process membership data: ${err}`
 );
 
 // Ensure membership data is valid before proceeding.
