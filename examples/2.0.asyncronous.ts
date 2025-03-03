@@ -43,20 +43,6 @@ const fetchData = (): Promise<string> =>
   );
 
 /**
- * Parses a JSON string into an object.
- * Returns a Right with the parsed object or a Left with an error message.
- *
- * @param jsonString - The JSON string to parse.
- * @returns Either a string error message or the parsed object.
- */
-const parseJSON = (jsonString: string): Either<string, unknown> => {
-  return tryCatch<string, unknown>(
-    () => JSON.parse(jsonString),
-    (error: unknown): string => `Invalid JSON: ${(error as Error).message}`
-  );
-};
-
-/**
  * Executes an asynchronous operation using tryCatchAsync,
  * then synchronously extracts the result with fold.
  */
@@ -82,6 +68,20 @@ interface User {
   name: string;
   age: number;
 }
+
+/**
+ * Parses a JSON string into an object.
+ * Returns a Right with the parsed object or a Left with an error message.
+ *
+ * @param jsonString - The JSON string to parse.
+ * @returns Either a string error message or the parsed object.
+ */
+const parseJSON = (jsonString: string): Either<string, unknown> => {
+  return tryCatch<string, unknown>(
+    () => JSON.parse(jsonString),
+    (error: unknown): string => `Invalid JSON: ${(error as Error).message}`
+  );
+};
 
 /**
  * Validates that the provided data conforms to the User interface.
